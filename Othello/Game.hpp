@@ -15,7 +15,7 @@ typedef enum class Side
 {
 	White,
 	Black,
-	None,
+	
 }Side;
 
 
@@ -31,18 +31,19 @@ class BoardData
 public:
 
 	//コンストラクタ
-	BoardData(Side s,glm::ivec2 p)
+	BoardData(glm::ivec2 p,bool b)
 	{
-		side = s;
 		pos - p;
+		put = b;
 	}
 
 
 	//デフォルトコンストラクタ
 	BoardData()	
 	{
-		side = Side::None;
+		side = Side::Black;
 		pos = glm::ivec2(-1,-1);
+		put = false;
 	}
 
 
@@ -50,6 +51,7 @@ public:
 
 	Side side;		//何があるのか？
 	glm::ivec2 pos;	//座標	
+	bool put;		//何か置いてあるかどうか？
 };
 
 
@@ -75,8 +77,10 @@ private:
 
 
 	bool getIsPut(glm::ivec2 p, Side my);	//その場所に置けるかどうか？
+	void RevChip(Side my ,glm::ivec2 p);	//ひっくり返す。
+	void Opponent();						//相手ターン
 
-	//BoardData board[BOARD_SIZE][BOARD_SIZE];		//ボード配列
+
 	std::array<std::array<BoardData,8>,8> board;	//ボード配列
 
 	Entry* owner;	//Entryクラス

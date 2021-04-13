@@ -18,16 +18,23 @@ Game::Game(Entry* entry)
 	{
 		for (int x = 0; x < BOARD_SIZE; x++)
 		{
-			board[y][x] = BoardData(Side::None, glm::ivec2(x, y));
+			board[y][x] = BoardData(glm::ivec2(x, y),false);
+
 		}
 	}
 
 	//初期ブロック
-	board[3][3] = BoardData(Side::White, glm::ivec2(3, 3));
-	board[3][4] = BoardData(Side::Black, glm::ivec2(4, 3));
+	board[3][3] = BoardData(glm::ivec2(3, 3), true);
+	board[3][3].side = Side::White;
 
-	board[4][3] = BoardData(Side::Black, glm::ivec2(3, 4));
-	board[4][4] = BoardData(Side::White, glm::ivec2(4, 4));
+	board[3][4] = BoardData(glm::ivec2(4, 3), true);
+	board[3][4].side = Side::Black;
+
+	board[4][3] = BoardData(glm::ivec2(3, 4), true);
+	board[4][3].side = Side::Black;
+
+	board[4][4] = BoardData(glm::ivec2(4, 4), true);
+	board[4][4].side = Side::White;
 	
 }
 
@@ -41,107 +48,466 @@ Game::~Game()
 //その場所に置けるかどうか？
 bool Game::getIsPut(glm::ivec2 p,Side my)
 {
-	if (board[p.y][p.x].side == Side::None)
+	if (board.at(p.y).at(p.x).put == false)
 	{
-		if (my == Side::Black)
+	
+		bool b = false;
+		int num = 0;
+
+		//右
+		for (int i = 1; i <  BOARD_SIZE - p.x; i++)
 		{
-			int num = 0;
-			bool b = false;
-
-
-			//右
-			for (int i = 1; i <  8 - p.x; i++)
+			if (board.at(p.y).at(p.x + i).side != my && board.at(p.y).at(p.x + i).put == true)
 			{
-				if (board[p.y][p.x + i].side == Side::White)
+				num++;
+			}
+			else if ( (board.at(p.y).at(p.x + i).side == my) && (board.at(p.y).at(p.x + i).put == true) )
+			{
+				if (num > 0)
 				{
 					b = true;
+					break;
 				}
-				else {
+				else if (num == 0)
+				{
+					break;
+				}
+				
+			}
+			else if (board.at(p.y).at(p.x + i).put == false)
+			{
+				break;
+			}
+		}
+			 
+		//左
+		num = 0;
+		for (int i = 1; i < BOARD_SIZE - (BOARD_SIZE - p.x); i++)
+		{	
+			if (board.at(p.y).at(p.x - i).side != my && board.at(p.y).at(p.x - i).put == true)
+			{
+				num++;
+			}
+			else if ( (board.at(p.y).at(p.x - i).side == my) && (board.at(p.y).at(p.x - i).put == true) )
+			{
+				if (num > 0)
+				{
+					b = true;
+					break;
+				}
+				else if (num == 0)
+				{
 					break;
 				}
 			}
-
-			//左
-			for (int i = 1; i < 8 - p.x; i++)
+			else if (board.at(p.y).at(p.x - i).put == false)
 			{
-				if (board[p.y][p.x - i].side == Side::White)
+				break;
+			}		
+		}
+		
+		//下
+		num = 0;
+		for (int i = 1; i < BOARD_SIZE - (BOARD_SIZE - p.y); i++)
+		{
+			if (p.y + i < BOARD_SIZE)
+			{
+				if ((board.at(p.y + i).at(p.x).side != my) && (board.at(p.y + i).at(p.x).put == true))
 				{
-					b = true;
+					num++;
 				}
-				else {
+				else if ((board.at(p.y + i).at(p.x).side == my) && (board.at(p.y + i).at(p.x).put == true))
+				{
+					if (num > 0)
+					{
+						b = true;
+					}
+					break;
+				}
+				else if (board.at(p.y + i).at(p.x).put == false)
+				{
+					break;
+				}			
+			}			
+		}
+
+		//上
+		num = 0;
+		for (int i = 1; i < (BOARD_SIZE - p.y); i++)
+		{
+			if (p.y - i > -1)
+			{
+				if ((board.at(p.y - i).at(p.x).side != my) && (board.at(p.y - i).at(p.x).put == true))
+				{
+					num++;
+				}
+				else if ((board.at(p.y - i).at(p.x).side == my) && (board.at(p.y - i).at(p.x).put == true))
+				{
+					if (num > 0)
+					{
+						b = true;
+					}
+					break;
+				}
+				else if (board.at(p.y - i).at(p.x).put == false)
+				{
+					break;
+				}			
+			}			
+		}
+	
+		//左上
+		num = 0;		
+		for (int i = 1; i < BOARD_SIZE; i++)
+		{
+			if ( ((p.y - i) > -1) && ((p.x - i) > -1) )
+			{
+				//自分の色と逆の色だった場合
+				if ( (board.at(p.y - i).at(p.x - i).side != my) && (board.at(p.y - i).at(p.x - i).put == true) )
+				{
+					num++;
+				}
+				else if ( (board.at(p.y - i).at(p.x - i).side == my) && (board.at(p.y - i).at(p.x - i).put == true))
+				{
+					if (num > 0)
+					{
+						b = true;
+						break;
+					}
+					else if (num == 0)
+					{
+						break;
+					}
+				}
+				else if (board.at(p.y - i).at(p.x - 1).put == false)
+				{
 					break;
 				}
 			}
-
-
-			
-			//下
-			for (int i = 1; i < 8 - p.y; i++)
+			else 
 			{
-				if (board[p.y - i][p.x].side == Side::White)
-				{
-					printf("ああ\n");
-
-					b = true;
-				}
-				else {
-					break;
-				}
+				break;
 			}
-
-
-
-
-
-
-			return b;
-
 		}
 
 
 
+
+		
+		//右上
+		num = 0;
+		for (int i = 1; i < BOARD_SIZE; i++)
+		{
+			if (((p.y - i) > -1) && ((p.x + i) < BOARD_SIZE))
+			{
+				//自分の色と逆の色だった場合
+				if ((board.at(p.y - i).at(p.x + i).side != my) && (board.at(p.y - i).at(p.x + i).put == true))
+				{
+					num++;
+				}
+				else if ( (board.at(p.y - i).at(p.x + i).side == my) && (board.at(p.y - i).at(p.x + i).put == true) )
+				{
+					if (num > 0)
+					{
+						b = true;
+						break;
+					}
+					else if (num == 0)
+					{
+						break;
+					}
+				}
+				else if (board.at(p.y - i).at(p.x + 1).put == false)
+				{
+					break;
+				}
+
+			}
+			else {
+				break;
+			}
+		}
+		
+		//左下
+		num = 0;
+		for (int i = 1; i < BOARD_SIZE; i++)
+		{
+			if (((p.y + i) < BOARD_SIZE) && ((p.x - i) > -1))
+			{
+				//自分の色と逆の色だった場合
+				if ((board.at(p.y + i).at(p.x - i).side != my) && (board.at(p.y + i).at(p.x - i).put == true))
+				{
+					num++;
+				}
+				else if ( (board.at(p.y + i).at(p.x - i).side == my) && (board.at(p.y + i).at(p.x - i).put == true) )
+				{
+					if (num > 0)
+					{
+						b = true;
+						break;
+					}
+					else if (num == 0)
+					{
+						break;
+					}
+				}
+				else if (board.at(p.y + i).at(p.x - 1).put == false)
+				{
+					break;
+				}
+
+			}
+			else 
+			{
+				break;
+			}
+		}
+
+
+		//右下
+		num = 0;
+		for (int i = 1; i < BOARD_SIZE; i++)
+		{
+			if (((p.y + i) < BOARD_SIZE) && ((p.x + i) < BOARD_SIZE))
+			{
+				//自分の色と逆の色だった場合
+				if ((board.at(p.y + i).at(p.x + i).side != my) && (board.at(p.y + i).at(p.x + i).put == true))
+				{
+					num++;
+				}
+				else if ( (board.at(p.y + i).at(p.x + i).side == my) && (board.at(p.y + i).at(p.x + i).put == true) )
+				{
+					if (num > 0)
+					{
+						b = true;
+						break;
+					}
+					else if (num == 0)
+					{
+						break;
+					}
+				}
+				else if (board.at(p.y + i).at(p.x + 1).put == false)
+				{
+					break;
+				}
+			}
+			else 
+			{
+				break;
+			}
+		}
+		
+		return b;		
 	}
 
 	return false;
 }
 
-void Game::Update()
+//ひっくり返す
+void Game::RevChip(Side my, glm::ivec2 p)
 {
-	glm::ivec2 pos;
-	GetMousePoint(&pos.x,&pos.y);
-
-	glm::ivec2 p = glm::ivec2(0,0);
-	p.x = pos.x / CELL;
-	p.y = pos.y / CELL;
-
-	//左クリック
-	if ((GetMouseInput() && MOUSE_INPUT_LEFT)  != 0)
+	//右
+	for (int i = 1; i < BOARD_SIZE - p.x; i++)
 	{
-		//printf("%d , %d\n", p.x, p.y);
-		if (getIsPut(p,mySide) == true)
+		if ((board.at(p.y).at(p.x + i).side != my) && (board.at(p.y).at(p.x + i).put == true))
 		{
-			board[p.y][p.x].side = mySide;
-
-
-
-
+			board.at(p.y).at(p.x + i).side = my;
+			board.at(p.y).at(p.x + i).put = true;
 
 
 		}
-	
+		else 
+		{
+			break;
+		}
 	}
 
+	//左
+	for (int i = 1; i < BOARD_SIZE - (BOARD_SIZE - p.x); i++)
+	{
+		if ((board.at(p.y).at(p.x - i).side != my) && (board.at(p.y).at(p.x - i).put == true))
+		{
+			board.at(p.y).at(p.x - i).side = my;
+			board.at(p.y).at(p.x - i).put = true;
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	//下
+	for (int i = 1; i < BOARD_SIZE - (BOARD_SIZE - p.y); i++)
+	{
+		if ((board.at(p.y + i).at(p.x).side != my) && (board.at(p.y + i).at(p.x).put == true))
+		{
+			board.at(p.y + i).at(p.x).side = my;
+			board.at(p.y + i).at(p.x).put = true;
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	//上
+	for (int i = 1; i < (BOARD_SIZE - p.y); i++)
+	{
+		if ((board.at(p.y - i).at(p.x).side != my) && (board.at(p.y - i).at(p.x).put == true))
+		{
+			board.at(p.y - i).at(p.x).side = my;
+			board.at(p.y - i).at(p.x).put = true;
+		}
+		else
+		{
+			break;
+		}
+	}
+	
+	//左上
+	for (int i = 1; i < BOARD_SIZE; i++)
+	{
+		if (((p.y - i) > -1) && ((p.x - i) > -1))
+		{
+			//自分の色と逆の色だった場合
+			if ((board.at(p.y - i).at(p.x - i).side != my) && (board.at(p.y - i).at(p.x - i).put == true))
+			{
+				board.at(p.y - i).at(p.x - i).side = my;
+	 			board.at(p.y - i).at(p.x - i).put = true;
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+
+	//右上
+	for (int i = 1; i < BOARD_SIZE; i++)
+	{
+		if (((p.y - i) > -1) && ((p.x + i) < BOARD_SIZE))
+		{
+			//自分の色と逆の色だった場合
+			if ((board.at(p.y - i).at(p.x + i).side != my) && (board.at(p.y - i).at(p.x + i).put == true))
+			{
+				board.at(p.y - i).at(p.x + i).side = my;
+				board.at(p.y - i).at(p.x + i).put = true;
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+
+	//右下
+	for (int i = 1; i < BOARD_SIZE; i++)
+	{
+		if (((p.y + i)  <	BOARD_SIZE) && ((p.x + i) < BOARD_SIZE))
+		{
+			//自分の色と逆の色だった場合
+			if ((board.at(p.y + i).at(p.x + i).side != my) && (board.at(p.y + i).at(p.x + i).put == true))
+			{
+				board.at(p.y + i).at(p.x + i).side = my;
+				board.at(p.y + i).at(p.x + i).put = true;
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+
+	//左下
+	for (int i = 1; i < BOARD_SIZE; i++)
+	{
+		if (((p.y + i) < BOARD_SIZE) && ((p.x - i) > -1))
+		{
+			//自分の色と逆の色だった場合
+			if ((board.at(p.y + i).at(p.x - i).side != my) && (board.at(p.y + i).at(p.x - i).put == true))
+			{
+				board.at(p.y + i).at(p.x - i).side = my;
+				board.at(p.y + i).at(p.x - i).put = true;
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+
+
+	
+}
+
+
+//相手ターン
+void Game::Opponent()
+{
+	bool b = false;
+	for (int y = 0; y < BOARD_SIZE; y++)
+	{
+		for (int x = 0; x < BOARD_SIZE; x++)
+		{
+
+			if (getIsPut(glm::ivec2(x, y), Side::White) == true)
+			{
+
+				board.at(y).at(x).side = Side::White;
+				board.at(y).at(x).put = true;
+			//	RevChip(Side::White, glm::ivec2(x,y));	//ブロックをひっくり返す
+				
+				b = true;	
+				break;	
+			}
+		}
+
+		if (b == true)
+		{
+			break;
+		}
+	}
 
 
 }
 
 
+
+void Game::Update()
+{
+	
+	glm::ivec2 pos = glm::ivec2(0,0);
+	GetMousePoint(&pos.x,&pos.y);
+
+	if ((pos.x < (BOARD_SIZE * CELL) && pos.x > 0) && (pos.y < (BOARD_SIZE * CELL) && pos.y > 0))
+	{
+		//セルを算出
+		pos.x = pos.x / CELL;
+		pos.y = pos.y / CELL;
+
+		//左クリック
+		if ((GetMouseInput() && MOUSE_INPUT_LEFT) != 0)
+		{			
+			if (getIsPut(pos, mySide) == true)
+			{
+				//置ける場合
+
+				board.at(pos.y).at(pos.x).side = mySide;
+				board.at(pos.y).at(pos.x).put = true;
+				RevChip(mySide,pos);	//ブロックを変転
+
+				//Opponent();
+
+			}			
+		}
+	}
+}
+
+
 void Game::Draw()
 {
-	//printf("っ\n");
 
-
-	DrawGraph(0, 0, boardSprite, true);
 
 
 	//盤面
@@ -149,19 +515,22 @@ void Game::Draw()
 	{
 		for (int x = 0; x < BOARD_SIZE; x++)
 		{
-			if (board[y][x].side == Side::None)
+			if (board.at(y).at(x).put == false)
 			{
 				DrawGraph(x * CELL, y * CELL, boardSprite, true);
 			}
-			else if (board[y][x].side == Side::White)
+			else if (board.at(y).at(x).side == Side::White && board.at(y).at(x).put == true)
 			{
 				DrawGraph(x * CELL, y * CELL, whiteSprite, true);
 			}
-			else if (board[y][x].side == Side::Black)
+			else if (board.at(y).at(x).side == Side::Black && board.at(y).at(x).put == true)
 			{
 				DrawGraph(x * CELL, y * CELL, blackSprite, true);
 			}
 		}
 	}
+
+
+	
 
 }
