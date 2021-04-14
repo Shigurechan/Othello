@@ -3,6 +3,11 @@
 #include "glm/glm.hpp"
 #include <array>
 
+
+#define SCREEN_WIDTH ((int)640)
+#define SCREEN_HEIGHT ((int)480)
+
+
 //前方宣言
 class Entry;
 
@@ -79,10 +84,18 @@ private:
 	bool getIsPut(glm::ivec2 p, Side my);	//その場所に置けるかどうか？
 	void RevChip(Side my ,glm::ivec2 p);	//ひっくり返す。
 	void Opponent();						//相手ターン
+	void Percentage();						//ブロック数を数える
+	void Debug_board();						//デバッグ用の盤面を表示
+	bool GameOver(Side my);						//ゲームオーバー判定 true ゲームオーバー
+
 
 
 	std::array<std::array<BoardData,8>,8> board;	//ボード配列
-
+	int whiteNum = 0;			//白の数
+	int blackNum = 0;			//黒の数
+	bool turn = false;			//ターン　自分のターンはfalse
+	int anim = 0;				//待機フレーム
+	bool isGameOver = false;	//ゲームオーバーになったかどうか？
 	Entry* owner;	//Entryクラス
 };
 

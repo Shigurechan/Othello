@@ -31,10 +31,10 @@ Game::Game(Entry* entry)
 	board[3][4].side = Side::White;
 
 	board[4][3] = BoardData(glm::ivec2(3, 4), true);
-	board[4][3].side = Side::Black;
+	board[4][3].side = Side::White;
 
 	board[4][4] = BoardData(glm::ivec2(4, 4), true);
-	board[4][4].side = Side::White;
+	board[4][4].side = Side::Black;
 	
 }
 
@@ -109,7 +109,6 @@ bool Game::getIsPut(glm::ivec2 p,Side my)
 		//下
 		num = 0;
 		for (int i = 1; i < (BOARD_SIZE - p.y); i++)
-			//for (int i = 1; i < BOARD_SIZE - (BOARD_SIZE - p.y); i++)
 		{
 			if (p.y + i < BOARD_SIZE)
 			{
@@ -134,7 +133,7 @@ bool Game::getIsPut(glm::ivec2 p,Side my)
 
 		//上
 		num = 0;
-		for (int i = 1; i < (BOARD_SIZE - p.y); i++)
+		for (int i = 1; i < BOARD_SIZE - (BOARD_SIZE - p.y); i++)
 		{
 			if (p.y - i > -1)
 			{
@@ -190,11 +189,7 @@ bool Game::getIsPut(glm::ivec2 p,Side my)
 				break;
 			}
 		}
-
-
-
-
-		
+	
 		//右上
 		num = 0;
 		for (int i = 1; i < BOARD_SIZE; i++)
@@ -263,7 +258,6 @@ bool Game::getIsPut(glm::ivec2 p,Side my)
 				break;
 			}
 		}
-
 
 		//右下
 		num = 0;
@@ -351,6 +345,7 @@ void Game::RevChip(Side my, glm::ivec2 p)
 				break;
 			}
 		}
+
 		b = false;
 	}
 
@@ -379,7 +374,6 @@ void Game::RevChip(Side my, glm::ivec2 p)
 			break;
 		}
 	}
-
 	if (b == true)
 	{
 		for (int i = 1; i < BOARD_SIZE - (BOARD_SIZE - p.x); i++)
@@ -394,6 +388,7 @@ void Game::RevChip(Side my, glm::ivec2 p)
 				break;
 			}
 		}
+
 		b = false;
 	}
 
@@ -402,7 +397,6 @@ void Game::RevChip(Side my, glm::ivec2 p)
 	//Down
 	num = 0;
 	for (int i = 1; i < (BOARD_SIZE - p.y); i++)
-		//for (int i = 1; i < BOARD_SIZE - (BOARD_SIZE - p.y); i++)
 	{
 		if (p.y + i < BOARD_SIZE)
 		{
@@ -424,7 +418,6 @@ void Game::RevChip(Side my, glm::ivec2 p)
 			}
 		}
 	}
-
 	if (b == true)
 	{
 		for (int i = 1; i < (BOARD_SIZE - p.y); i++)
@@ -439,14 +432,15 @@ void Game::RevChip(Side my, glm::ivec2 p)
 				break;
 			}
 		}
+
 		b = false;
 	}
 
 
 
-	//上
+	//Up
 	num = 0;
-	for (int i = 1; i < (BOARD_SIZE - p.y); i++)
+	for (int i = 1; i <  BOARD_SIZE - (BOARD_SIZE - p.y); i++)
 	{
 		if (p.y - i > -1)
 		{
@@ -468,10 +462,9 @@ void Game::RevChip(Side my, glm::ivec2 p)
 			}
 		}
 	}
-
 	if (b == true)
 	{
-		for (int i = 1; i < (BOARD_SIZE - p.y); i++)
+		for (int i = 1; i < BOARD_SIZE - (BOARD_SIZE - p.y); i++)
 		{
 			if (board.at(p.y - i).at(p.x).side != my && board.at(p.y - i).at(p.x).put == true)
 			{
@@ -483,6 +476,7 @@ void Game::RevChip(Side my, glm::ivec2 p)
 				break;
 			}
 		}
+
 		b = false;
 	}
 
@@ -524,8 +518,6 @@ void Game::RevChip(Side my, glm::ivec2 p)
 
 		}
 	}
-	
-	num = 0;
 	if (b == true) 
 	{
 		for (int i = 1; i < BOARD_SIZE; i++)
@@ -585,8 +577,6 @@ void Game::RevChip(Side my, glm::ivec2 p)
 			break;
 		}
 	}
-
-	num = 0;
 	if (b == true) 
 	{
 		for (int i = 1; i < BOARD_SIZE; i++)
@@ -609,6 +599,7 @@ void Game::RevChip(Side my, glm::ivec2 p)
 				break;
 			}
 		}
+
 		b = false;
 	}
 
@@ -642,14 +633,12 @@ void Game::RevChip(Side my, glm::ivec2 p)
 			{
 				break;
 			}
-
 		}
 		else
 		{
 			break;
 		}
 	}
-
 	if (b == true)
 	{
 
@@ -677,11 +666,6 @@ void Game::RevChip(Side my, glm::ivec2 p)
 
 		b = false;
 	}
-
-
-
-
-
 
 	//右下
 	num = 0;
@@ -716,8 +700,6 @@ void Game::RevChip(Side my, glm::ivec2 p)
 			break;
 		}
 	}
-
-
 	if (b == true)
 	{
 		num = 0;
@@ -730,7 +712,6 @@ void Game::RevChip(Side my, glm::ivec2 p)
 				{
 					board.at(p.y + i).at(p.x + i).side = my;
 					board.at(p.y + i).at(p.x + i).put = true;
-
 				}
 				else
 				{
@@ -782,15 +763,106 @@ void Game::Opponent()
 
 }
 
+//ブロック数を数える
+void Game::Percentage()
+{
+
+	//数を初期化
+	whiteNum = 0;
+	blackNum = 0;
+
+	for (int y = 0; y < BOARD_SIZE; y++)
+	{
+		for (int x = 0; x < BOARD_SIZE; x++)
+		{
+			if (board.at(y).at(x).side == Side::White)
+			{
+				whiteNum++;
+			}
+			else if (board.at(y).at(x).side == Side::Black)
+			{
+				blackNum++;
+			}
+		}
+	}
+}
+
+//デバッグ用の盤面を表示
+void Game::Debug_board()
+{
+	//デバッグ
+	for (int y = 0; y < BOARD_SIZE; y++)
+	{
+		for (int x = 0; x < BOARD_SIZE; x++)
+		{
+			if (board.at(y).at(x).side == Side::White)
+			{
+				printf("●");
+			}
+			else if (board.at(y).at(x).side == Side::Black)
+			{
+				printf("◯");
+			}
+			else {
+				printf("・");
+			}
+		}
+		printf("\n");
+	}
+
+}
+
+
+
+//ゲームオーバー判定
+bool Game::GameOver(Side my) 
+{
+	bool b = true;
+	//デバッグ
+	for (int y = 0; y < BOARD_SIZE; y++)
+	{
+		for (int x = 0; x < BOARD_SIZE; x++)
+		{
+			if (getIsPut(glm::ivec2(x,y),my) == true)
+			{
+				b = false;
+			}
+		}
+	}
+
+	return b;
+}
+
 
 
 void Game::Update()
 {
 	
+	//相手のターン
+	if (turn == true)
+	{
+		if (anim == 90) {
+
+			Opponent();
+			printf("\n\n");
+			printf("相手\n");
+			Debug_board();
+
+			turn = false;
+			anim = 0;
+		}
+		else {
+			anim++;
+		}
+	}
+
+
+
+
+
 	glm::ivec2 pos = glm::ivec2(0,0);
 	GetMousePoint(&pos.x,&pos.y);
-
-	if ((pos.x < (BOARD_SIZE * CELL) && pos.x > 0) && (pos.y < (BOARD_SIZE * CELL) && pos.y > 0))
+	if ((pos.x < (BOARD_SIZE * CELL) && pos.x > 0) && (pos.y < (BOARD_SIZE * CELL) && pos.y > 0) && turn == false)
 	{
 		//セルを算出
 		pos.x = pos.x / CELL;
@@ -799,7 +871,8 @@ void Game::Update()
 		//左クリック
 		if ((GetMouseInput() && MOUSE_INPUT_LEFT) != 0)
 		{
-			if (getIsPut(pos, mySide) == true)
+
+			if (getIsPut(pos, mySide) == true && isGameOver == false)
 			{
 				//置ける場合
 				//printf("put\n");
@@ -809,72 +882,62 @@ void Game::Update()
 
 				//デバッグ
 				printf("自分\n");
+				Debug_board();
+				
+				turn = true;	//相手のターンへ
+			}else if (isGameOver == true)
+			{
+				//ゲームオーバーのため再初期化
+
+				//盤面を初期化
 				for (int y = 0; y < BOARD_SIZE; y++)
 				{
 					for (int x = 0; x < BOARD_SIZE; x++)
 					{
+						board[y][x] = BoardData(glm::ivec2(x, y), false);
 
-						if (x == pos.x && y == pos.y)
-						{
-							printf("□");
-						}
-						else if (board.at(y).at(x).side == Side::White)
-						{
-							printf("●");
-						}else if (board.at(y).at(x).side == Side::Black)
-						{
-							printf("◯");
-						}
-						else {
-							printf("・");
-						}
 					}
-
-					printf("\n");
 				}
 
+				//初期ブロック
+				board[3][3] = BoardData(glm::ivec2(3, 3), true);
+				board[3][3].side = Side::Black;
+
+				board[3][4] = BoardData(glm::ivec2(4, 3), true);
+				board[3][4].side = Side::White;
+
+				board[4][3] = BoardData(glm::ivec2(3, 4), true);
+				board[4][3].side = Side::White;
+
+				board[4][4] = BoardData(glm::ivec2(4, 4), true);
+				board[4][4].side = Side::Black;
 
 
-
-				//Sleep(3000);
-				Opponent();
-
-
-				//デバッグ
-				printf("\n\n");
-				printf("相手\n");
-
-				for (int y = 0; y < BOARD_SIZE; y++)
-				{
-					for (int x = 0; x < BOARD_SIZE; x++)
-					{
-						if (board.at(y).at(x).side == Side::White)
-						{
-							printf("●");
-						}
-						else if (board.at(y).at(x).side == Side::Black)
-						{
-							printf("◯");
-						}
-						else {
-							printf("・");
-						}
-					}
-
-					printf("\n");
-				}
-
-
+				isGameOver = false;
 			}
+
+
+
+			
+
+
 		}
 	}
+
+
+
+
+
+
+
+
+	isGameOver = GameOver(mySide);
+	Percentage();	//ブロックの数を数える。
 }
 
 
 void Game::Draw()
 {
-
-
 
 	//盤面
 	for (int y = 0; y < BOARD_SIZE; y++)
@@ -895,4 +958,18 @@ void Game::Draw()
 			}
 		}
 	}
+
+	//割合合いを表示
+	DrawFormatString(400, 50, GetColor(255, 255, 255), "Black: %d", blackNum);
+	DrawFormatString(400, 80, GetColor(255, 255, 255), "White: %d", whiteNum);
+
+	if (isGameOver == true)
+	{
+		DrawBox(SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2 - 10, SCREEN_WIDTH / 2 + 200, SCREEN_HEIGHT / 2 + 25, GetColor(0, 0, 100), true);
+		DrawFormatString(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, GetColor(255, 255, 255), "GAME OVER");
+
+	}
+	
+
+
 }
