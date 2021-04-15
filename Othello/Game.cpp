@@ -9,9 +9,9 @@ Game::Game(Entry* entry)
 	owner = entry;	//Entry クラス
 
 	//スプライトロード
-	whiteSprite = LoadGraph("Assets/White.png");
-	blackSprite = LoadGraph("Assets/Black.png");
-	boardSprite = LoadGraph("Assets/Board.png");
+	whiteSprite = LoadGraph("Assets/White.png");	//白ブロック
+	blackSprite = LoadGraph("Assets/Black.png");	//黒ブロック
+	boardSprite = LoadGraph("Assets/Board.png");	//ボードブロック
 
 	//盤面を初期化
 	for (int y = 0; y < BOARD_SIZE; y++)
@@ -217,6 +217,8 @@ bool Game::getIsPut(glm::ivec2 p,Side my)
 				{
 					break;
 				}
+
+
 
 			}
 			else {
@@ -435,8 +437,6 @@ void Game::RevChip(Side my, glm::ivec2 p)
 
 		b = false;
 	}
-
-
 
 	//Up
 	num = 0;
@@ -745,8 +745,9 @@ void Game::Opponent()
 			if (getIsPut(glm::ivec2(x, y), Side::White) == true)
 			{
 				
-				board.at(y).at(x).side = Side::White;
-				board.at(y).at(x).put = true;
+				board.at(y).at(x).side = Side::White;	//白ブロック
+				board.at(y).at(x).put = true;			//置く
+
 				RevChip(Side::White, glm::ivec2(x,y));	//ブロックをひっくり返す
 				
 				b = true;	
@@ -843,7 +844,7 @@ void Game::Update()
 	{
 		if (anim == 90) {
 
-			Opponent();
+			Opponent();	//敵AI
 			printf("\n\n");
 			printf("相手\n");
 			Debug_board();
@@ -915,24 +916,12 @@ void Game::Update()
 
 				isGameOver = false;
 			}
-
-
-
-			
-
-
 		}
 	}
 
 
-
-
-
-
-
-
-	isGameOver = GameOver(mySide);
-	Percentage();	//ブロックの数を数える。
+	isGameOver = GameOver(mySide);	//ゲームオーバー判定
+	Percentage();					//ブロックの数を数える
 }
 
 
@@ -959,17 +948,16 @@ void Game::Draw()
 		}
 	}
 
-	//割合合いを表示
+	//割合を表示
 	DrawFormatString(400, 50, GetColor(255, 255, 255), "Black: %d", blackNum);
 	DrawFormatString(400, 80, GetColor(255, 255, 255), "White: %d", whiteNum);
 
+	//ゲームオーバーを表示
 	if (isGameOver == true)
 	{
 		DrawBox(SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2 - 10, SCREEN_WIDTH / 2 + 200, SCREEN_HEIGHT / 2 + 25, GetColor(0, 0, 100), true);
 		DrawFormatString(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, GetColor(255, 255, 255), "GAME OVER");
 
 	}
-	
-
 
 }
